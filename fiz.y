@@ -7,14 +7,21 @@
 
 %{
   package main
-  import "fmt"
+  import (
+    "fmt"
+    "github.com/jluchiji/go-fiz/base"
+    "github.com/jluchiji/go-fiz/ast"
+    "github.com/jluchiji/go-fiz/function"
+  )
 %}
 
 
 %union {
-  str_val string
-  num_val int
-  id_list []string
+  str_val   string
+  num_val   int
+  node_val  base.AstNode
+  id_list   []string
+  node_list []base.AstNode
 }
 
 %token OP
@@ -25,6 +32,8 @@
 %token <num_val>   NUM
 %token <str_val>   XID
 
+%type  <node_val>  expr
+%type  <node_list> exprs
 %type  <id_list>   idlist
 
 %%
@@ -33,21 +42,27 @@ statements:
   statement | statement statements;
 
 statement:
-  OP DEF OP ID idlist CP expr CP  { fmt.Println("statement 1");               } |
-  expr                            { fmt.Println("statement 2");               } ;
+  OP DEF OP ID idlist CP expr CP  { function.Register($4, function.NewFiz($5, $7))  } |
+  expr                            { fmt.Println($1.Evaluate([]int{ }));             } ;
 
 idlist:
-  ID idlist                       { fmt.Println("idlist 1")                   } |
+  ID idlist                       { $$ = append([]string{ $1 }, $2...)        } |
   /* EMPTY */                     { $$ = []string{ }                          } ;
 
 expr:
-  OP ID exprs CP                  { fmt.Println("expr 1");                    } |
-  ID                              { fmt.Println("expr 2");                    } |
-  XID                             { fmt.Println("expr 3");                    } |
-  NUM                             { fmt.Println("expr 4");                    } ;
+  OP ID exprs CP                  {
+                                    f, ok := function.Find($2)
+                                    if (!ok) {
+                                      panic("FIZ_UNDEF_FUNC")
+                                    }
+                                    $$ = ast.NewCall(f, $3)
+                                  } |
+  ID                              { $$ = ast.NewVariable($1)                  } |
+  XID                             { panic("FIZ_NOT_IMPLEMENTED")              } |
+  NUM                             { $$ = ast.NewNumber($1)                    } ;
 
 exprs:
-  expr exprs                      { fmt.Println("exprs 1");                   } |
-  /* EMPTY */                     { fmt.Println("exprs 2");                   } ;
+  expr exprs                      { $$ = append([]base.AstNode{ $1 }, $2...)  } |
+  /* EMPTY */                     { $$ = []base.AstNode{ }                    } ;
 
 %%

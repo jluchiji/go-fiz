@@ -18,8 +18,13 @@
 //
 
 package main
-import ("os";"strconv")
+import (
+  "os"
+  "strconv"
+  "github.com/jluchiji/go-fiz/function"
+)
 
 func main() {
+  function.Init()
   yyParse(NewLexer(os.Stdin))
 }
