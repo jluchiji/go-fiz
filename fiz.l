@@ -14,7 +14,7 @@
                                  return NUM;
                                }
 /[ \t\n]/                      { /* Discard */ }
-/;[^\n]*/                          { /* Discard */ }
+/;[^\n]*/                      { /* Discard */ }
 //
 
 package main

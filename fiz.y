@@ -42,21 +42,21 @@ statements:
   statement | statement statements;
 
 statement:
-  OP DEF OP ID idlist CP expr CP  { function.Register($4, function.NewFiz($5, $7))  } |
-  expr                            { fmt.Println($1.Evaluate([]int{ }));             } ;
+  OP DEF OP ID idlist CP expr CP  {
+                                    fn := function.NewFiz($5, $7)
+                                    ok := function.Register($4, fn)
+                                    if (!ok) {
+                                      panic("FIZ_DUP_FUNC")
+                                    }
+                                  } |
+  expr                            { fmt.Println($1.Evaluate([]int{ }));       } ;
 
 idlist:
   ID idlist                       { $$ = append([]string{ $1 }, $2...)        } |
   /* EMPTY */                     { $$ = []string{ }                          } ;
 
 expr:
-  OP ID exprs CP                  {
-                                    f, ok := function.Find($2)
-                                    if (!ok) {
-                                      panic("FIZ_UNDEF_FUNC")
-                                    }
-                                    $$ = ast.NewCall(f, $3)
-                                  } |
+  OP ID exprs CP                  { $$ = ast.NewCall($2, $3)                  } |
   ID                              { $$ = ast.NewVariable($1)                  } |
   XID                             { panic("FIZ_NOT_IMPLEMENTED")              } |
   NUM                             { $$ = ast.NewNumber($1)                    } ;

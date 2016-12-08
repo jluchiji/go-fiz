@@ -6,11 +6,14 @@
  */
 
 package ast
-import "github.com/jluchiji/go-fiz/base"
+import (
+  "github.com/jluchiji/go-fiz/base"
+  "github.com/jluchiji/go-fiz/function"
+)
 
 
 type Call struct {
-  fn    base.Func
+  name  string
   argv  []base.AstNode
 }
 
@@ -23,13 +26,17 @@ func (this *Call) Resolve(fn base.Func) {
 
 
 func (this *Call) Evaluate(context []int) int {
-  return this.fn.Call(this.argv, context)
+  fn, ok := function.Find(this.name)
+  if (!ok) {
+    panic("FIZ_UNDEF_FUNC")
+  }
+  return fn.Call(this.argv, context)
 }
 
 
-func NewCall(fn base.Func, argv []base.AstNode) *Call {
+func NewCall(name string, argv []base.AstNode) *Call {
   return &Call{
-    fn,
+    name,
     argv,
   }
 }
