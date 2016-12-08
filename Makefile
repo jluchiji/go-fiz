@@ -1,8 +1,10 @@
 
-all: y
+all: fiz
 
+install: fiz
+	cp -f fiz ${GOPATH}/bin/fiz
 
-y: fiz.nn.go y.go
+fiz: fiz.nn.go y.go
 	go build -o fiz fiz.nn.go y.go
 
 fiz.nn.go: fiz.l

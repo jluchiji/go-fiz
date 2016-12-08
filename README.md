@@ -1,5 +1,5 @@
 # Go-FIZ
-The FIZ is a very LISP-y scripting languages that is basically useless. This is a a Go
+The FIZ is a very LISP-y scripting language that is basically useless. This is a a Go
 reimplementation of [jluchiji/fiz][0], which was originally written in C++ as a part of CS252
 Operating Systems course at Purdue University.
 
@@ -10,7 +10,7 @@ Built using [blynn/nex][1] instead of Flex/Bison.
 ```
 $ go get github.com/blynn/nex
 $ go get github.com/jluchiji/go-fiz
-$ cd $GOPATH/src/github.com/jluchiji/go-fiz && make
+$ cd $GOPATH/src/github.com/jluchiji/go-fiz && make install
 ```
 
 
